@@ -1,4 +1,4 @@
-# Neton - A sandbox information gathering framework
+# Neton - A sandbox information gathering tool
 ![](img/2022-10-27-10-51-52.png)  
 **Neton** is a tool for **getting information from Internet connected sandboxes**. It is composed by an agent and a web interface that displays the collected information.  
 The Neton agent gets information from the systems on which it runs and exfiltrates it via HTTPS to the web server.  
