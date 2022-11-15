@@ -1,0 +1,41 @@
+<html>
+
+<head>
+    <title>Neton</title>
+    {% load static %}
+    <link rel="icon" type="image/svg" href='{% static "images/logo.png" %}'>
+    <link rel="stylesheet" href='{% static "css/material_icons.css" %}'>
+    <link rel="stylesheet" href='{% static "css/bootstrap.min.css" %}'>
+    <script src='{% static "js/jquery-3.5.1.min.js" %}'></script>
+</head>
+
+<body>
+    <style>
+        body {
+            /* background-color: #ffffff; */
+            padding-top: 80px;
+        }
+    </style>
+    <div class="container p-5">
+        <div class="text-center">
+            {% load static %}
+            <img class="img-fluid" alt="logo" style="width: 400px;" src='{% static "images/logo.png" %}' />
+            <div class="container p-4">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="form-group  p-2">
+                        <label for="username"><b>Username:</b></label>
+                            {{ form.username }}
+                    </div>
+                    <div class="form-group p-2">
+                        <label for="password"><b>Password:</b></label>
+                        {{ form.password }}
+                    </div>
+                    <button class="btn btn-primary" type="submit">Login</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

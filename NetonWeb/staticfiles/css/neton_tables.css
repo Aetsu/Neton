@@ -1,0 +1,21 @@
+table th {
+    /* border: 1px solid #ffffff; */
+    background-color: #5a6e81;
+    /* text-align: center; */
+    /* color: #ffffff; */
+}
+table {
+    border: 1px solid;
+}
+.table>tbody>tr>td {
+    padding-top: 3;
+    padding-bottom: 3;
+    vertical-align: middle;
+}
+div.dataTables_filter,
+div.dataTables_length,
+div.dataTables.paginate_button {
+  /* padding-top: 0.65em; */
+  padding-top: 3;
+padding-bottom: 3;
+}

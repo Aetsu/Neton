@@ -1,0 +1,142 @@
+{% extends 'core/base.html' %} {% block content %}
+{% load static %}
+{% block extrastyle %}
+<style>
+    .table>tbody>tr>td {
+        padding-top: 3;
+        padding-bottom: 3;
+        vertical-align: middle;
+        word-break: break-word;
+    } 
+</style>
+{% endblock extrastyle %}
+<div class="container">
+    <div class="fs-1 text-center p-2">
+        <h2>Filecrawler</h2>
+    </div>
+    <table id="table_list" class="table table-bordered compact nowrap text-center">
+        <thead>
+            <tr>
+                <th scope="col" class="text-center table-primary">ExecutionId</th>
+                <th scope="col" class="text-center table-primary">IP</th>
+                <th scope="col" class="text-center table-primary">Sandbox</th>
+                <th scope="col" class="text-center table-primary">External drives</th>
+                <th scope="col" class="text-center table-primary">Program files</th>
+                <th scope="col" class="text-center table-primary">Program files (x86)</th>
+                <th scope="col" class="text-center table-primary">C:/</th>
+                <th scope="col" class="text-center table-primary">Driver list</th>
+                <th scope="col" class="text-center table-primary">Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for elem in filecrawler_l %}
+            <tr>
+                <td scope="row"><a href="{% url 'core:get_execution' executionId=elem.executionId %}" target="_blank">{{elem.executionId}}</a></td>
+                <td scope="row"><span data-html="true" data-toggle="tooltip" data-placement="top"
+                        title="Country: {{elem.ip_country_code}} - ASN Desc: {{elem.ip_asn_description}}">{{elem.ip}}</span>
+                </td>
+                <td class="">{{elem.sandboxId|title}} (w{{elem.wave}})</td>
+                <td scope="row" class="text-center">
+                    {% if elem.files_in_drives|length > 0%}
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#files_in_drives_{{elem.executionId}}" aria-expanded="false" aria-controls="files_in_drives_{{elem.executionId}}">
+                        Show ({{elem.files_in_drives|length}})
+                      </button>
+                      <div class="collapse" id="files_in_drives_{{elem.executionId}}">
+                        <div class="card card-body">
+                            <table class="table table-hover table-bordered">
+                                {% for f in elem.files_in_drives %}
+                                    <tr><td class="text-break">{{f}}</td></tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                      </div>
+                    {%endif%}
+                </td>
+                <td scope="row" class="text-center">
+                    {% if elem.file_paths_64|length > 0%}
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#file_paths_64_{{elem.executionId}}" aria-expanded="false" aria-controls="file_paths_64_{{elem.executionId}}">
+                        Show ({{elem.file_paths_64|length}})
+                      </button>
+                      <div class="collapse" id="file_paths_64_{{elem.executionId}}">
+                        <div class="card card-body">
+                            <table class="table table-hover table-bordered">
+                                {% for f in elem.file_paths_64 %}
+                                    <tr><td class="text-break">{{f}}</td></tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                      </div>
+                    {%endif%}
+                </td>
+                <td scope="row" class="text-center">
+                    {% if elem.file_paths_32|length > 0%}
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#file_paths_32_{{elem.executionId}}" aria-expanded="false" aria-controls="file_paths_32_{{elem.executionId}}">
+                        Show ({{elem.file_paths_32|length}})
+                      </button>
+                      <div class="collapse" id="file_paths_32_{{elem.executionId}}">
+                        <div class="card card-body">
+                            <table class="table table-hover table-bordered">
+                                {% for f in elem.file_paths_32 %}
+                                    <tr><td class="text-break">{{f}}</td></tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                      </div>
+                    {%endif%}
+                </td>
+                <td scope="row" class="text-center">
+                    {% if elem.dir_c|length > 0%}
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#dir_c_{{elem.executionId}}" aria-expanded="false" aria-controls="dir_c_{{elem.executionId}}">
+                        Show ({{elem.dir_c|length}})
+                      </button>
+                      <div class="collapse" id="dir_c_{{elem.executionId}}">
+                        <div class="card card-body">
+                            <table class="table table-hover table-bordered">
+                                {% for f in elem.dir_c %}
+                                    <tr><td class="text-break">{{f}}</td></tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                      </div>
+                    {%endif%}
+                </td>
+                <td scope="row" class="text-center">
+                    {% if elem.drivers|length > 0%}
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#drivers_{{elem.executionId}}" aria-expanded="false" aria-controls="drivers_{{elem.executionId}}">
+                        Show ({{elem.drivers|length}})
+                      </button>
+                      <div class="collapse" id="drivers_{{elem.executionId}}">
+                        <div class="card card-body">
+                            <table class="table table-hover table-bordered">
+                                {% for f in elem.drivers %}
+                                    <tr><td class="text-break">{{f}}</td></tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                      </div>
+                    {%endif%}
+                </td>
+                <td scope="row" class="text-center">{{elem.creation_date}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+    $(document).ready(function() {
+        var table = $('#table_list').DataTable({
+        "bLengthChange": true,
+        "pageLength": 10,
+        "deferRender": true,
+        "columnDefs": [{
+            "targets": "_all"
+        }],
+        "order": [[ 8, "desc" ]]
+    });
+    });
+</script>
+{% endblock %}

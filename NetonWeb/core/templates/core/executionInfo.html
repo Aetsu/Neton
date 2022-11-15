@@ -1,0 +1,817 @@
+{% extends 'core/base.html' %} {% block content %}
+{% load static %}
+{% block extrastyle %}
+<style>
+    .table>tbody>tr>td {
+        padding-top: 3;
+        padding-bottom: 3;
+        vertical-align: middle;
+    }
+</style>
+{% endblock %}
+
+<div class="container">
+    <div class="fs-1 text-center p-2">
+        <h2>Summary - {{execution.executionId}}</h2>
+    </div>
+    <div class="row">
+        <div class="col">
+            <table class="table table-bordered">
+                <tr>
+                    <td class="text-center table-primary"><b>Sandbox</b></td>
+                    <td class="text-center">{{execution.sandboxId|title}}</td>
+                </tr>
+                <tr>
+                    <td class="text-center table-primary"><b>Wave</b></td>
+                    <td class="text-center">Wave {{execution.wave}}</td>
+                </tr>
+                <tr>
+                    <td class="text-center table-primary"><b>IP</b></td>
+                    <td class="text-center">{{execution.ip}}</td>
+                </tr>
+                <tr>
+                    <td class="text-center table-primary"><b>Country code</b></td>
+                    <td class="text-center">{{execution.ip_country_code}}</td>
+                </tr>
+                <tr>
+                    <td class="text-center table-primary"><b>ASN description</b></td>
+                    <td class="text-center">{{execution.ip_asn_description}}</td>
+                </tr>
+                <tr>
+                    <td class="text-center table-primary"><b>Date</b></td>
+                    <td class="text-center">{{execution.creation_date}}</td>
+                </tr>
+                <tr>
+                    <td class="text-center table-primary"><b>Md5</b></td>
+                    <td class="text-center">{{execution.md5_sample}}</td>
+                </tr>
+                <tr>
+                    <td class="text-center table-primary"><b>Sha256</b></td>
+                    <td class="text-center">{{execution.sha256_sample}}</td>
+                </tr>
+                <tr>
+                    <td class="text-center table-primary"><b>Module Systeminfo</b></td>
+                    <td class="text-center">
+                        {% if execution.m_systeminfo == 1 %}
+                        <span class="icon text-success"><i class="fas fa-check-square"></i></span>
+                        {% else %}
+                        <span class="icon text-danger"><i class="fas fa-ban"></i></span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="text-center table-primary"><b>Module Filecrawler</b></td>
+                    <td class="text-center">
+                        {% if execution.m_filecrawler == 1 %}
+                        <span class="icon text-success"><i class="fas fa-check-square"></i></span>
+                        {% else %}
+                        <span class="icon text-danger"><i class="fas fa-ban"></i></span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="text-center table-primary"><b>Module Hooks</b></td>
+                    <td class="text-center">
+                        {% if execution.m_hook == 1 %}
+                        <span class="icon text-success"><i class="fas fa-check-square"></i></span>
+                        {% else %}
+                        <span class="icon text-danger"><i class="fas fa-ban"></i></span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="text-center table-primary"><b>Module SharpEDRChecker</b></td>
+                    <td class="text-center">
+                        {% if execution.m_sharpedrchecker == 1 %}
+                        <span class="icon text-success"><i class="fas fa-check-square"></i></span>
+                        {% else %}
+                        <span class="icon text-danger"><i class="fas fa-ban"></i></span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="text-center table-primary"><b>Module Pafish</b></td>
+                    <td class="text-center">
+                        {% if execution.m_pafish == 1 %}
+                        <span class="icon text-success"><i class="fas fa-check-square"></i></span>
+                        {% else %}
+                        <span class="icon text-danger"><i class="fas fa-ban"></i></span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="text-center table-primary"><b>Module Al-khaser</b></td>
+                    <td class="text-center">
+                        {% if execution.m_alkhaser == 1 %}
+                        <span class="icon text-success"><i class="fas fa-check-square"></i></span>
+                        {% else %}
+                        <span class="icon text-danger"><i class="fas fa-ban"></i></span>
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="col">
+            <img class="img-fluid" src="data:image/png;base64, {{systeminfo.screenshot}}">
+        </div>
+    </div>
+    <div class="row">
+        <div class="fs-1 text-center p-2">
+            <h3>Systeminfo</h3>
+        </div>
+        <table id="table_systeminfo" class="table table-bordered table-hover compact nowrap text-center">
+            <tr>
+                <td class="text-center table-primary">OS Version</td>
+                <td>
+                    {{systeminfo.os_version}}
+                </td>
+            </tr>
+            <tr>
+                <td class="text-center table-primary">Systeminfo</td>
+                <td class="text-justify">
+                    {% if systeminfo.sysinfo_output|length > 1%}
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#sysinfo_output_{{execution.executionId}}" aria-expanded="false"
+                        aria-controls="sysinfo_output_{{execution.executionId}}">
+                        Show
+                    </button>
+                    <div class="collapse" id="sysinfo_output_{{execution.executionId}}">
+                        <div class="card card-body">
+                            {% for e in systeminfo.sysinfo_output %}
+                            {{e}}<br>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {%endif%}
+                </td>
+            </tr>
+            <tr>
+                <td class="text-center table-primary">Processor</td>
+                <td>
+                    {{systeminfo.processor_information|join:"<br>"}}
+                </td>
+            </tr>
+            <tr>
+                <td class="text-center table-primary">Physical Memory</td>
+                <td>
+                    {{systeminfo.physical_memory|join:"<br>"}}
+                </td>
+            </tr>
+            <tr>
+                <td class="text-center table-primary">OS RAM</td>
+                <td>
+                    {{systeminfo.computer_ram|join:"<br>"}}
+                </td>
+            </tr>
+            <tr>
+                <td class="text-center table-primary">Bios Serial</td>
+                <td>
+                    {{systeminfo.bios_ser_no|join:"<br>"}}
+                </td>
+            </tr>
+            <tr>
+                <td class="text-center table-primary">MAC</td>
+                <td>
+                    {% if systeminfo.networkInfo|length > 0%}
+                    <table class="table table-bordered compact">
+                        {% for s in systeminfo.networkInfo %}
+                        <tr>
+                            <td class="text-center">{{s.name}}</td>
+                            <td class="text-center">{{s.mac}}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                    {%endif%}
+                </td>
+            </tr>
+            <tr>
+                <td class="text-center table-primary">Tasklist</td>
+                <td>
+                    {% if systeminfo.tasklist|length > 0%}
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#tasklist_{{execution.executionId}}" aria-expanded="false"
+                        aria-controls="tasklist_{{execution.executionId}}">
+                        Show ({{systeminfo.tasklist|length}})
+                    </button>
+                    <div class="collapse" id="tasklist_{{execution.executionId}}">
+                        <div class="card card-body">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="text-center">Name</th>
+                                        <th scope="col" class="text-center">Pid</th>
+                                        <th scope="col" class="text-center">Session</th>
+                                        <th scope="col" class="text-center">User</th>
+                                    </tr>
+                                </thead>
+                                {% for t in systeminfo.tasklist %}
+                                <tr>
+                                    <td class="text-center">{{t.name}}</td>
+                                    <td class="text-center">{{t.pid}}</td>
+                                    <td class="text-center">{{t.session}}</td>
+                                    <td class="text-center">{{t.user}}</td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+                    {%endif%}
+                </td>
+            </tr>
+            <tr>
+                <td class="text-center table-primary">Services</td>
+                <td>
+                    {% if systeminfo.services|length > 0%}
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#services_{{execution.executionId}}" aria-expanded="false"
+                        aria-controls="services_{{execution.executionId}}">
+                        Show ({{systeminfo.services|length}})
+                    </button>
+                    <div class="collapse" id="services_{{execution.executionId}}">
+                        <div class="card card-body">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="text-center">Name</th>
+                                        <th scope="col" class="text-center">Description</th>
+                                        <th scope="col" class="text-center">Status</th>
+                                    </tr>
+                                </thead>
+                                {% for s in systeminfo.services %}
+                                <tr>
+                                    <td class="text-center">{{s.name}}</td>
+                                    <td class="text-center">{{s.desc}}</td>
+                                    <td class="text-center">{{s.status}}</td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+                    {%endif%}
+                </td>
+            </tr>
+            <tr>
+                <td class="text-center table-primary">Modules</td>
+                <td>
+                    {% if systeminfo.modules|length > 0%}
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#modules_{{execution.executionId}}" aria-expanded="false"
+                        aria-controls="modules_{{execution.executionId}}">
+                        Show ({{systeminfo.modules|length}})
+                    </button>
+                    <div class="collapse" id="modules_{{execution.executionId}}">
+                        <div class="card card-body">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="text-center">Name</th>
+                                        <th scope="col" class="text-center">Path</th>
+                                        <th scope="col" class="text-center">Description</th>
+                                    </tr>
+                                </thead>
+                                {% for t in systeminfo.modules %}
+                                <tr>
+                                    <td class="text-center">{{t.name}}</td>
+                                    <td class="text-center">{{t.path}}</td>
+                                    <td class="text-center">{{t.description}}</td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+                    {%endif%}
+                </td>
+            </tr>
+            <tr>
+                <td class="text-center table-primary">Users</td>
+                <td>
+                    {% if systeminfo.users|length > 0%}
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#users_{{execution.executionId}}" aria-expanded="false"
+                        aria-controls="users_{{execution.executionId}}">
+                        Show ({{systeminfo.users|length}})
+                    </button>
+                    <div class="collapse" id="users_{{execution.executionId}}">
+                        <div class="card card-body">
+                            <table class="table table-bordered text-center">
+                                {% for g in systeminfo.users %}
+                                <tr>
+                                    <td>{{g}}</td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+                    {%endif%}
+                </td>
+            </tr>
+            <tr>
+                <td class="text-center table-primary">Localgroup</td>
+                <td>
+                    {% if systeminfo.localgroup|length > 0%}
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#localgroup_{{execution.executionId}}" aria-expanded="false"
+                        aria-controls="localgroup_{{execution.executionId}}">
+                        Show ({{systeminfo.localgroup|length}})
+                    </button>
+                    <div class="collapse" id="localgroup_{{execution.executionId}}">
+                        <div class="card card-body">
+                            <table class="table table-bordered text-center">
+                                {% for g in systeminfo.localgroup %}
+                                <tr>
+                                    <td>{{g}}</td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+                    {%endif%}
+                </td>
+            </tr>
+            <tr>
+                <td class="text-center table-primary">Netstat</td>
+                <td>
+                    {% if systeminfo.netstat|length > 0%}
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#netstat_{{execution.executionId}}" aria-expanded="false"
+                        aria-controls="netstat_{{execution.executionId}}">
+                        Show ({{systeminfo.netstat|length}})
+                    </button>
+                    <div class="collapse" id="netstat_{{execution.executionId}}">
+                        <div class="card card-body">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="text-center">Src</th>
+                                        <th scope="col" class="text-center">Dest</th>
+                                        <th scope="col" class="text-center">Status</th>
+                                    </tr>
+                                </thead>
+                                {% for s in systeminfo.netstat %}
+                                <tr>
+                                    <td class="text-center">{{s.src}}</td>
+                                    <td class="text-center">{{s.dest}}</td>
+                                    <td class="text-center">{{s.status}}</td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+                    {%endif%}
+                </td>
+            </tr>
+            <tr>
+                <td class="text-center table-primary">Drivers</td>
+                <td>
+                    {% if systeminfo.dir_drivers|length > 0%}
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#dir_drivers_{{execution.executionId}}" aria-expanded="false"
+                        aria-controls="dir_drivers_{{execution.executionId}}">
+                        Show ({{systeminfo.dir_drivers|length}})
+                    </button>
+                    <div class="collapse" id="dir_drivers_{{execution.executionId}}">
+                        <div class="card card-body">
+                            <table class="table table-bordered">
+                                {% for g in systeminfo.dir_drivers %}
+                                <tr>
+                                    <td>
+                                        {% for aux in g %}
+                                        {{aux}}<br>
+                                        {% endfor %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+                    {%endif%}
+                </td>
+            </tr>
+            <tr>
+                <td class="text-center table-primary">ENV</td>
+                <td>
+                    {% if systeminfo.environment_variables|length > 0%}
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#environment_variables_{{execution.executionId}}" aria-expanded="false"
+                        aria-controls="environment_variables_{{execution.executionId}}">
+                        Show ({{systeminfo.environment_variables|length}})
+                    </button>
+                    <div class="collapse" id="environment_variables_{{execution.executionId}}">
+                        <div class="card card-body">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="text-center">Variable</th>
+                                        <th scope="col" class="text-center">Value</th>
+                                    </tr>
+                                </thead>
+                                {% for s in systeminfo.environment_variables %}
+                                <tr>
+                                    <td class="text-center">{{s.variable}}</td>
+                                    <td class="text-center">{{s.value}}</td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+                    {%endif%}
+                </td>
+            <tr>
+                <td class="text-center table-primary">System pipes</td>
+                <td>
+                    {% if systeminfo.system_pipes|length > 0%}
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#system_pipes_{{execution.executionId}}" aria-expanded="false"
+                        aria-controls="system_pipes_{{execution.executionId}}">
+                        Show ({{systeminfo.system_pipes|length}})
+                    </button>
+                    <div class="collapse" id="system_pipes_{{execution.executionId}}">
+                        <div class="card card-body">
+                            <table class="table table-bordered">
+                                {% for g in systeminfo.system_pipes %}
+                                <tr>
+                                    <td>{{g}}</td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+                    {%endif%}
+                </td>
+            </tr>
+            <tr>
+                <td class="text-center table-primary">Drives</td>
+                <td>
+                    <table class="table table-bordered">
+                        {% for d in systeminfo.l_drives %}
+                        <tr>
+                            <td>{{d}}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </td>
+            </tr>
+            <tr class="text-center">
+                <td class="table-primary">Screen resolution</td>
+                <td>
+                    {{systeminfo.screen_res}}
+                </td>
+            </tr>
+            <tr class="text-center">
+                <td class="table-primary">Number of screens</td>
+                <td>
+                    {{systeminfo.n_screens}}
+                </td>
+            </tr>
+            <tr>
+                <td class="text-center table-primary">HD size</td>
+                <td>
+                    {{systeminfo.hd_size}}
+                </td>
+            </tr>
+            <tr>
+                <td class="text-center table-primary">Uptime</td>
+                <td>
+                    {{systeminfo.system_uptime}}
+                </td>
+            </tr>
+            <tr>
+                <td class="text-center table-primary">Installed apps</td>
+                <td>
+                    {% if systeminfo.installed_apps|length > 0%}
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#installed_apps_{{execution.executionId}}" aria-expanded="false"
+                        aria-controls="installed_apps_{{execution.executionId}}">
+                        Show ({{systeminfo.installed_apps|length}})
+                    </button>
+                    <div class="collapse" id="installed_apps_{{execution.executionId}}">
+                        <div class="card card-body">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="text-center">App</th>
+                                        <th scope="col" class="text-center">Path</th>
+                                    </tr>
+                                </thead>
+                                {% for s in systeminfo.installed_apps %}
+                                <tr>
+                                    <td class="text-center">{{s.app}}</td>
+                                    <td class="text-center">{{s.path}}</td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+                    {%endif%}
+                </td>
+            </tr>
+            <tr>
+                <td class="text-center table-primary">Recent files</td>
+                <td>
+                    {% if systeminfo.recent_files|length > 0%}
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#recent_files_{{execution.executionId}}" aria-expanded="false"
+                        aria-controls="recent_files_{{execution.executionId}}">
+                        Show ({{systeminfo.recent_files|length}})
+                    </button>
+                    <div class="collapse" id="recent_files_{{execution.executionId}}">
+                        <div class="card card-body">
+                            <table class="table table-bordered">
+                                {% for g in systeminfo.recent_files %}
+                                <tr>
+                                    <td>{{g}}</td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+                    {%endif%}
+                </td>
+            </tr>
+        </table>
+        <div class="row">
+            <div class="fs-1 text-center p-2">
+                <h3>Filecrawler</h3>
+            </div>
+            <table id="table_filecrawler" class="table is-striped is-bordered is-hoverable pt-3">
+                <tr>
+                    <td class="text-center table-primary">External drives</td>
+                    <td class="text-center">
+                        {% if filecrawler.files_in_drives|length > 0%}
+                        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#files_in_drives_{{execution.executionId}}" aria-expanded="false" aria-controls="files_in_drives_{{execution.executionId}}">
+                            Show ({{filecrawler.files_in_drives|length}})
+                          </button>
+                          <div class="collapse" id="files_in_drives_{{execution.executionId}}">
+                            <div class="card card-body">
+                                <table class="table table-hover table-bordered">
+                                    {% for f in filecrawler.files_in_drives %}
+                                        <tr><td class="text-break">{{f}}</td></tr>
+                                    {% endfor %}
+                                </table>
+                            </div>
+                          </div>
+                        {%endif%}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="text-center table-primary">Program files</td>
+                    <td class="text-center">
+                        {% if filecrawler.file_paths_64|length > 0%}
+                        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#file_paths_64_{{execution.executionId}}" aria-expanded="false" aria-controls="file_paths_64_{{execution.executionId}}">
+                            Show ({{filecrawler.file_paths_64|length}})
+                          </button>
+                          <div class="collapse" id="file_paths_64_{{execution.executionId}}">
+                            <div class="card card-body">
+                                <table class="table table-hover table-bordered">
+                                    {% for f in filecrawler.file_paths_64 %}
+                                        <tr><td class="text-break">{{f}}</td></tr>
+                                    {% endfor %}
+                                </table>
+                            </div>
+                          </div>
+                        {%endif%}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="text-center table-primary">Program files (x86)</td>
+                    <td class="text-center">
+                        {% if filecrawler.file_paths_32|length > 0%}
+                        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#file_paths_32_{{execution.executionId}}" aria-expanded="false" aria-controls="file_paths_32_{{execution.executionId}}">
+                            Show ({{filecrawler.file_paths_32|length}})
+                          </button>
+                          <div class="collapse" id="file_paths_32_{{execution.executionId}}">
+                            <div class="card card-body">
+                                <table class="table table-hover table-bordered">
+                                    {% for f in filecrawler.file_paths_32 %}
+                                        <tr><td class="text-break">{{f}}</td></tr>
+                                    {% endfor %}
+                                </table>
+                            </div>
+                          </div>
+                        {%endif%}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="text-center table-primary">C:\</td>
+                    <td class="text-center">
+                        {% if filecrawler.dir_c|length > 0%}
+                        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#dir_c_{{execution.executionId}}" aria-expanded="false" aria-controls="dir_c_{{execution.executionId}}">
+                            Show ({{filecrawler.dir_c|length}})
+                          </button>
+                          <div class="collapse" id="dir_c_{{execution.executionId}}">
+                            <div class="card card-body">
+                                <table class="table table-hover table-bordered">
+                                    {% for f in filecrawler.dir_c %}
+                                        <tr><td class="text-break">{{f}}</td></tr>
+                                    {% endfor %}
+                                </table>
+                            </div>
+                          </div>
+                        {%endif%}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="text-center table-primary">Driver list</td>
+                    <td class="text-center">
+                        {% if filecrawler.drivers|length > 0%}
+                        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#drivers_{{execution.executionId}}" aria-expanded="false" aria-controls="drivers_{{execution.executionId}}">
+                            Show ({{filecrawler.drivers|length}})
+                          </button>
+                          <div class="collapse" id="drivers_{{execution.executionId}}">
+                            <div class="card card-body">
+                                <table class="table table-hover table-bordered">
+                                    {% for f in filecrawler.drivers %}
+                                        <tr><td class="text-break">{{f}}</td></tr>
+                                    {% endfor %}
+                                </table>
+                            </div>
+                          </div>
+                        {%endif%}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="fs-1 text-center p-2">
+            <h3>Hooks</h3>
+        </div>
+                        <table class="table table-bordered table-hover text-center table-sm">
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="text-center table-primary">Syscall</th>
+                                    <th scope="col" class="text-center table-primary">Status</th>
+                                </tr>
+                            </thead>
+                            {% for h in hooks.hooklist %}
+                            <tr>
+                                <td class="text-center">
+                                    {{h.hook}}
+                                </td>
+                                <td class="text-center">
+                                    {% if h.status == 'SAFE' %}
+                                    <p style="color:#48c78e" ;>NO</p>
+                                    <!-- <span class="icon has-text-success">
+                                    <i class="fas fa-check-square"></i>
+                                </span> -->
+                                    {% else %}
+                                    <p style="color:#FF0000" ;>YES</p>
+                                    <!-- <span class="icon has-text-danger">
+                                    <i class="fas fa-ban"></i>
+                                </span> -->
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+    </div>
+    <div class="row">
+        <div class="fs-1 text-center p-2">
+            <h3>SharpEDRChecker</h3>
+        </div>
+        <table id="table_sharpedrchecker" class="table table-bordered">
+            <tbody>
+                <tr>
+                    <td scope="col" class="text-center table-primary">Processes</td>
+                    <td scope="row">
+                        <table class="table table-bordered">
+                            {% for s in sharpedrchecker.launchProcesses %}
+                            <tr>
+                                <td class="text-center">{{s.name}}</td>
+                                <td class="text-center"><i>{{s.tag}}</i></td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="col" class="text-center table-primary">Process Modules</td>
+                    <td scope="row">
+                        <table class="table table-bordered">
+                            {% for s in sharpedrchecker.currentProcessModules %}
+                            <tr>
+                                <td class="text-center">{{s.name}}</td>
+                                <td class="text-center"><i>{{s.tag}}</i></td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="col" class="text-center table-primary">Check Directories</td>
+                    <td scope="row">
+                        <table class="table table-bordered">
+                            {% for s in sharpedrchecker.launchCheckDirectories %}
+                            <tr>
+                                <td class="text-center">{{s.name}}</td>
+                                <td class="text-center"><i>{{s.tag}}</i></td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="col" class="text-center table-primary">Services</td>
+                    <td scope="row">
+                        <table class="table table-bordered">
+                            {% for s in sharpedrchecker.launchServiceChecker %}
+                            <tr>
+                                <td class="text-center">{{s.name}}</td>
+                                <td class="text-center"><i>{{s.tag}}</i></td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="col" class="text-center table-primary">Drivers</td>
+                    <td scope="row">
+                        <table class="table table-bordered">
+                            {% for s in sharpedrchecker.launchCheckDrivers %}
+                            <tr>
+                                <td class="text-center">{{s.name}}</td>
+                                <td class="text-center"><i>{{s.tag}}</i></td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="row">
+        <div class="fs-1 text-center p-2">
+            <h3>Pafish</h3>
+        </div>
+        <table class="table table-bordered text-justify">
+            <tr>
+                <td>
+                    {% for e in pafish %}
+                    {{e}}<br>
+                    {% endfor %}
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="row">
+
+
+        <div class="fs-1 text-center p-2">
+            <h3>Al-khaser</h3>
+        </div>
+        <table class="table table-bordered text-justify">
+            <tr>
+                <td>
+                    {% for e in alkhaser %}
+                    {{e}}<br>
+                    {% endfor %}
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    });
+    $(document).ready(function () {
+        var table_systeminfo = $('#table_systeminfo').DataTable({
+            "paging": false,
+            "ordering": false,
+            "deferRender": true,
+            "columnDefs": [{
+                "className": "dt-center",
+                "targets": "_all"
+            }],
+        });
+        var table_filecrawler = $('#table_filecrawler').DataTable({
+            "paging": false,
+            "ordering": false,
+            "deferRender": true,
+            "columnDefs": [{
+                "className": "dt-center",
+                "targets": "_all"
+            }],
+        });
+        var table_hooks = $('#table_hooks').DataTable({
+            "paging": false,
+            "ordering": false,
+            "deferRender": true,
+            "columnDefs": [{
+                "className": "dt-center",
+                "targets": "_all"
+            }],
+        });
+        var table_sharpedrchecker = $('#table_sharpedrchecker').DataTable({
+            "paging": false,
+            "ordering": false,
+            "deferRender": true,
+            "columnDefs": [{
+                "className": "dt-center",
+                "targets": "_all"
+            }],
+        });
+    });
+</script>
+{% endblock %}

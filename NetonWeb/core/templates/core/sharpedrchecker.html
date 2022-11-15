@@ -1,0 +1,113 @@
+{% extends 'core/base.html' %} {% block content %}
+{% load static %}
+{% block extrastyle %}
+<style>
+    .table>tbody>tr>td {
+        padding-top: 3;
+        padding-bottom: 3;
+        vertical-align: middle;
+    }
+</style>
+{% endblock extrastyle %}
+<div class="container-fluid ">
+    <div class="fs-1 text-center p-2">
+        <h2>SharpEDRChecker</h2>
+    </div>
+    <div class="overflow-auto">
+    <table id="table_list" class="table table-bordered compact nowrap text-center">
+        <thead>
+            <tr>
+                <th scope="col" class="text-center table-primary">Execution</th>
+                <th scope="col" class="text-center table-primary">IP</th>
+                <th scope="col" class="text-center table-primary">Sandbox</th>
+                <th scope="col" class="text-center table-primary">Processes</th>
+                <th scope="col" class="text-center table-primary">Process Modules</th>
+                <th scope="col" class="text-center table-primary">Check Directories</th>
+                <th scope="col" class="text-center table-primary">Services</th>
+                <th scope="col" class="text-center table-primary">Drivers</th>
+                <th scope="col" class="text-center table-primary">Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for elem in sharpedrchecker_l %}
+            <tr>
+                <td scope="row"><a href="{% url 'core:get_execution' executionId=elem.executionId %}" target="_blank">{{elem.executionId}}</a></td>
+                <td scope="row"><span data-html="true" data-toggle="tooltip" data-placement="top"
+                        title="Country: {{elem.ip_country_code}} - ASN Desc: {{elem.ip_asn_description}}">{{elem.ip}}</span>
+                </td>
+                <td class="">{{elem.sandboxId|title}} (w{{elem.wave}})</td>
+                <td scope="row">
+                    <table class="table table-bordered">
+                        {% for s in elem.launchProcesses %}
+                        <tr>
+                            <td class="text-center">{{s.name}}</td>
+                            <td class="text-center"><i>{{s.tag}}</i></td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </td>
+                <td scope="row">
+                    <table class="table table-bordered">
+                        {% for s in elem.currentProcessModules %}
+                        <tr>
+                            <td class="text-center">{{s.name}}</td>
+                            <td class="text-center"><i>{{s.tag}}</i></td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </td>
+                <td scope="row">
+                    <table class="table table-bordered">
+                        {% for s in elem.launchCheckDirectories %}
+                        <tr>
+                            <td class="text-center">{{s.name}}</td>
+                            <td class="text-center"><i>{{s.tag}}</i></td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </td>
+                <td scope="row">
+                    <table class="table table-bordered">
+                        {% for s in elem.launchServiceChecker %}
+                        <tr>
+                            <td class="text-center">{{s.name}}</td>
+                            <td class="text-center"><i>{{s.tag}}</i></td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </td>
+                <td scope="row">
+                    <table class="table table-bordered">
+                        {% for s in elem.launchCheckDrivers %}
+                        <tr>
+                            <td class="text-center">{{s.name}}</td>
+                            <td class="text-center"><i>{{s.tag}}</i></td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </td>
+                <td scope="row" class="text-center">{{elem.creation_date}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    });
+    $(document).ready(function () {
+        var table = $('#table_list').DataTable({
+            "bLengthChange": true,
+            "pageLength": 10,
+            "deferRender": true,
+            "columnDefs": [{
+                "targets": "_all"
+            }],
+            "order": [[8, "desc"]]
+        });
+    });
+</script>
+{% endblock %}

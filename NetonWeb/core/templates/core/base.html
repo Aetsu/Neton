@@ -1,0 +1,122 @@
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% load static %}
+  <title>Neton</title>
+  <link rel="icon" type="image/svg" href='{% static "images/logo.png" %}'>
+  <link rel="stylesheet" href='{% static "css/material_icons.css" %}'>
+  <link rel="stylesheet" href='{% static "css/bootstrap.min.css" %}'>
+  <link rel="stylesheet" type="text/css" href='{% static "css/datatables.min.css" %}' />
+  <script src='{% static "js/jquery-3.5.1.min.js" %}'></script>
+  <script src='{% static "js/bootstrap.bundle.min.js" %}'></script>
+  <script src='{% static "js/datatables.min.js" %}'></script>
+</head>
+
+<body>
+  <style>
+    /* body {
+      background-color: #ffffff;
+      padding-top: 80px;
+    }  */
+    /*
+    details {
+      border: 1px solid #aaa;
+      border-radius: 4px;
+      padding: .5em .5em 0;
+      background-color: rgb(159, 199, 201);
+    }
+
+    summary {
+      font-weight: bold;
+      margin: -.5em -.5em 0;
+      padding: .5em;
+    }
+
+    details[open] {
+      padding: .5em;
+    }
+
+    details[open] summary {
+      border-bottom: 1px solid #aaa;
+      margin-bottom: .5em;
+    }
+    table {
+      display: block;
+      max-width: -moz-fit-content;
+      max-width: fit-content;
+      margin: 0 auto;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .table>tbody>tr>td {
+        padding-top: 3;
+        padding-bottom: 3;
+        vertical-align: middle;
+    }
+
+    table.center {
+        margin-left: auto;
+        margin-right: auto;
+    }*/
+  </style>
+  {% block extrastyle %}
+  {% endblock extrastyle %}
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="{% url 'core:get_executions'%}">Neton</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01"
+        aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarColor01">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="{% url 'core:get_executions'%}">Executions</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="{% url 'core:get_systeminfo'%}">Systeminfo</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="{% url 'core:get_filecrawler'%}">Filecrawler</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="{% url 'core:get_hooks'%}">Hooks</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="{% url 'core:get_sharpedrchecker'%}">SharpEDRChecker</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="{% url 'core:get_pafish'%}">Pafish</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="{% url 'core:get_alkhaser'%}">Al-khaser</a>
+          </li>
+
+        </ul>
+        <div class="d-flex">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true"
+                aria-expanded="false">@{{ user.get_username }}</a>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="{% url 'users:logout' %}">Log out</a>
+                <a class="dropdown-item" href="{% url 'core:export_json' %}">Export as json</a>
+              </div>
+            </li>
+          </ul>
+
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  {% block content %} {% endblock %}
+  {% block extrajs %}
+  {% endblock extrajs %}
+</body>
+
+</html>

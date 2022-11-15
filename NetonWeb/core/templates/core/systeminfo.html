@@ -1,0 +1,420 @@
+{% extends 'core/base.html' %} {% block content %}
+{% load static %}
+{% block extrastyle %}
+<style>
+    .table>tbody>tr>td {
+        /* padding-top: 3; */
+        /* padding-bottom: 3; */
+        vertical-align: middle;
+        /* word-wrap: break-word;
+        word-break: break-word; */
+    }
+    /* https://alt-web.com/TUTORIALS/?id=bootstrap_simple_image_zoom */
+.zoom {      
+    -webkit-transition: all 0.35s ease-in-out;    
+    -moz-transition: all 0.35s ease-in-out;    
+    transition: all 0.35s ease-in-out;     
+    cursor: -webkit-zoom-in;      
+    cursor: -moz-zoom-in;      
+    cursor: zoom-in;  
+}     
+
+.zoom:hover,  
+.zoom:active,   
+.zoom:focus {
+    /**adjust scale to desired size, 
+    add browser prefixes**/
+    -ms-transform: scale(4.5);    
+    -moz-transform: scale(4.5);  
+    -webkit-transform: scale(4.5);  
+    -o-transform: scale(4.5);  
+    transform: scale(4.5);    
+    position:relative;      
+    z-index:100;  
+}
+
+</style>
+{% endblock extrastyle %}
+
+<div class="container-fluid">
+    <div class="fs-1 text-center p-2">
+        <h2>Systeminfo</h2>
+    </div>
+    <div class="overflow-auto">
+    <table id="table_list" class="table table-bordered compact nowrap">
+        <thead>
+            <tr>
+                <th scope="col" class="text-center table-primary">Execution</th>
+                <th scope="col" class="text-center table-primary">IP</th>
+                <th scope="col" class="text-center table-primary">Sandbox</th>
+                <th scope="col" class="text-center table-primary">OS Version</th>
+                <th scope="col" class="text-center table-primary">Systeminfo</th>
+                <th scope="col" class="text-center table-primary">Processor</th>
+                <th scope="col" class="text-center table-primary">Physical Memory</th>
+                <th scope="col" class="text-center table-primary">OS RAM</th>
+                <th scope="col" class="text-center table-primary">BiosSerial</th>
+                <th scope="col" class="text-center table-primary">MAC</th>
+                <th scope="col" class="text-center table-primary">Tasklist</th>
+                <th scope="col" class="text-center table-primary">Services</th>
+                <th scope="col" class="text-center table-primary">Users</th>
+                <th scope="col" class="text-center table-primary">Localgroup</th>
+                <th scope="col" class="text-center table-primary">Connections</th>
+                <th scope="col" class="text-center table-primary">Drivers</th>
+                <th scope="col" class="text-center table-primary">Drives</th>
+                <th scope="col" class="text-center table-primary">ENV variables</th>
+                <th scope="col" class="text-center table-primary">System pipes</th>
+                <th scope="col" class="text-center table-primary">Screen resolution</th>
+                <th scope="col" class="text-center table-primary">Number of screens</th>
+                <th scope="col" class="text-center table-primary">Number of HD size</th>
+                <th scope="col" class="text-center table-primary">System uptime</th>
+                <th scope="col" class="text-center table-primary">Installed Apps</th>
+                <th scope="col" class="text-center table-primary">Recent Files</th>
+                <th scope="col" class="text-center table-primary">Mouse Position</th>
+                <th scope="col" class="text-center table-primary">Screenshot</th>
+                <th scope="col" class="text-center table-primary">Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for elem in systeminfo_l %}
+            <tr>
+                <td scope="row"><a href="{% url 'core:get_execution' executionId=elem.executionId %}" target="_blank">{{elem.executionId}}</a></td>
+                <td scope="row"><span data-html="true" data-toggle="tooltip" data-placement="top"
+                        title="Country: {{elem.ip_country_code}} - ASN Desc: {{elem.ip_asn_description}}">{{elem.ip}}</span>
+                </td>
+                <td class="">{{elem.sandboxId|title}} (w{{elem.wave}})</td>
+                <td scope="row">
+                    {{elem.os_version}}
+                </td>
+                <td scope="row" class="text-justify">
+                    {% if elem.sysinfo_output|length > 1%}
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#sysinfo_output_{{elem.executionId}}" aria-expanded="false" aria-controls="sysinfo_output_{{elem.executionId}}">
+                        Show
+                      </button>
+                      <div class="collapse" id="sysinfo_output_{{elem.executionId}}">
+                        <div class="card card-body">
+                                {% for e in elem.sysinfo_output %}
+                                {{e}}<br>
+                                {% endfor %}
+                        </div>
+                      </div>
+                      {%endif%}
+                </td>
+                <td scope="row">
+                    {{elem.processor_information|join:"<br>"}}
+                </td>
+                <td scope="row" class="text-center">
+                    {{elem.physical_memory|join:"<br>"}}
+                </td>
+                <td scope="row" class="text-center">
+                    {{elem.computer_ram|join:"<br>"}}
+                </td>
+                <td scope="row" class="text-center">
+                    {{elem.bios_ser_no|join:"<br>"}}
+                </td>
+                <td scope="row" class="text-center">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="text-center">Name</th>
+                                <th scope="col" class="text-center">MAC</th>
+                            </tr>
+                        </thead>
+                        {% for s in elem.networkInfo %}
+                        <tr>
+                            <td class="text-center">{{s.name}}</td>
+                            <td class="text-center">{{s.mac}}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </td>
+                <td scope="row" class="text-center">
+                    {% if elem.tasklist|length > 0%}
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#tasklist_{{elem.executionId}}" aria-expanded="false" aria-controls="tasklist_{{elem.executionId}}">
+                        Show ({{elem.tasklist|length}})
+                      </button>
+                      <div class="collapse" id="tasklist_{{elem.executionId}}">
+                        <div class="card card-body">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="text-center">Name</th>
+                                        <th scope="col" class="text-center">Pid</th>
+                                        <th scope="col" class="text-center">Session</th>
+                                        <th scope="col" class="text-center">User</th>
+                                    </tr>
+                                </thead>
+                                {% for t in elem.tasklist %}
+                                <tr>
+                                    <td class="text-center">{{t.name}}</td>
+                                    <td class="text-center">{{t.pid}}</td>
+                                    <td class="text-center">{{t.session}}</td>
+                                    <td class="text-center">{{t.user}}</td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                      </div>
+                    {%endif%}
+                </td>
+                <td scope="row" class="text-center">
+                    {% if elem.services|length > 0%}
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#services_{{elem.executionId}}" aria-expanded="false" aria-controls="services_{{elem.executionId}}">
+                        Show ({{elem.services|length}})
+                      </button>
+                      <div class="collapse" id="services_{{elem.executionId}}">
+                        <div class="card card-body">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="text-center">Name</th>
+                                        <th scope="col" class="text-center">Description</th>
+                                        <th scope="col" class="text-center">Status</th>
+                                        </tr>
+                                </thead>
+                                {% for s in elem.services %}
+                                <tr>
+                                    <td class="text-center">{{s.name}}</td>
+                                    <td class="text-center">{{s.desc}}</td>
+                                    <td class="text-center">{{s.status}}</td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                      </div>
+                    {%endif%}
+                </td>
+                <td scope="row" class="text-center">
+                    {% if elem.users|length > 0%}
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#users_{{elem.executionId}}" aria-expanded="false" aria-controls="users_{{elem.executionId}}">
+                        Show ({{elem.users|length}})
+                      </button>
+                      <div class="collapse" id="users_{{elem.executionId}}">
+                        <div class="card card-body">
+                            <table class="table table-bordered">
+                                {% for g in elem.users %}
+                                <tr>
+                                    <td>{{g}}</td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                      </div>
+                    {%endif%}
+                </td>
+                <td scope="row" class="text-center">
+                    {% if elem.localgroup|length > 0%}
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#localgroup_{{elem.executionId}}" aria-expanded="false" aria-controls="localgroup_{{elem.executionId}}">
+                        Show ({{elem.localgroup|length}})
+                      </button>
+                      <div class="collapse" id="localgroup_{{elem.executionId}}">
+                        <div class="card card-body">
+                            <table class="table table-bordered">
+                                {% for g in elem.localgroup %}
+                                <tr>
+                                    <td>{{g}}</td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                      </div>
+                    {%endif%}
+                </td>
+                <td scope="row" class="text-center">
+                    {% if elem.netstat|length > 0%}
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#netstat_{{elem.executionId}}" aria-expanded="false" aria-controls="netstat_{{elem.executionId}}">
+                        Show ({{elem.netstat|length}})
+                      </button>
+                      <div class="collapse" id="netstat_{{elem.executionId}}">
+                        <div class="card card-body">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="text-center">Src</th>
+                                        <th scope="col" class="text-center">Dest</th>
+                                        <th scope="col" class="text-center">Status</th>
+                                            </tr>
+                                </thead>
+                                {% for s in elem.netstat %}
+                                <tr>
+                                    <td class="text-center">{{s.src}}</td>
+                                    <td class="text-center">{{s.dest}}</td>
+                                    <td class="text-center">{{s.status}}</td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                      </div>
+                    {%endif%}
+                </td>
+                <td scope="row" class="text-center">
+                    {% if elem.dir_drivers|length > 0%}
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#dir_drivers_{{elem.executionId}}" aria-expanded="false" aria-controls="dir_drivers_{{elem.executionId}}">
+                        Show ({{elem.dir_drivers|length}})
+                      </button>
+                      <div class="collapse" id="dir_drivers_{{elem.executionId}}">
+                        <div class="card card-body">
+                            <table class="table table-bordered">
+                                {% for g in elem.dir_drivers %}
+                                <tr>
+                                    <td>
+                                        {% for aux in g %}
+                                            {{aux}}<br>
+                                        {% endfor %}    
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                      </div>
+                    {%endif%}
+                </td>
+                <td scope="row">
+                    <table class="table table-bordered">
+                        {% for d in elem.l_drives %}
+                        <tr>
+                            <td>{{d}}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </td>
+                <td scope="row" class="text-center">
+                    {% if elem.environment_variables|length > 0%}
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#environment_variables_{{elem.executionId}}" aria-expanded="false" aria-controls="environment_variables_{{elem.executionId}}">
+                        Show ({{elem.environment_variables|length}})
+                      </button>
+                      <div class="collapse" id="environment_variables_{{elem.executionId}}">
+                        <div class="card card-body">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="text-center">Variable</th>
+                                        <th scope="col" class="text-center">Value</th>
+                                    </tr>
+                                </thead>
+                                {% for s in elem.environment_variables %}
+                                <tr>
+                                    <td class="text-center">{{s.variable}}</td>
+                                    <td class="text-center">{{s.value}}</td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                      </div>
+                    {%endif%}
+                </td>
+                <td scope="row" class="text-center">
+                    {% if elem.system_pipes|length > 0%}
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#system_pipes_{{elem.executionId}}" aria-expanded="false" aria-controls="system_pipes_{{elem.executionId}}">
+                        Show ({{elem.system_pipes|length}})
+                      </button>
+                      <div class="collapse" id="system_pipes_{{elem.executionId}}">
+                        <div class="card card-body">
+                            <table class="table table-bordered">
+                                {% for g in elem.system_pipes %}
+                                <tr>
+                                    <td>{{g}}</td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                      </div>
+                    {%endif%}
+                </td>
+                <td scope="row" class="text-center">{{elem.screen_res}}</td>
+                <td scope="row" class="text-center">{{elem.n_screens}}</td>
+                <td scope="row" class="text-center">{{elem.hd_size}}</td>
+                <td scope="row" class="text-center">{{elem.system_uptime}}</td>
+                <td scope="row" class="text-center">
+                    {% if elem.installed_apps|length > 0%}
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#installed_apps_{{elem.executionId}}" aria-expanded="false" aria-controls="installed_apps_{{elem.executionId}}">
+                        Show ({{elem.installed_apps|length}})
+                      </button>
+                      <div class="collapse" id="installed_apps_{{elem.executionId}}">
+                        <div class="card card-body">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="text-center">App</th>
+                                        <th scope="col" class="text-center">Path</th>
+                                    </tr>
+                                </thead>
+                                {% for s in elem.installed_apps %}
+                                <tr>
+                                    <td class="text-center">{{s.app}}</td>
+                                    <td class="text-center">{{s.path}}</td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                      </div>
+                    {%endif%}
+                </td>
+                <td scope="row" class="text-center">
+                    {% if elem.recent_files|length > 0%}
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#recent_files_{{elem.executionId}}" aria-expanded="false" aria-controls="recent_files_{{elem.executionId}}">
+                        Show ({{elem.recent_files|length}})
+                      </button>
+                      <div class="collapse" id="recent_files_{{elem.executionId}}">
+                        <div class="card card-body">
+                            <table class="table table-bordered">
+                                {% for g in elem.recent_files %}
+                                <tr>
+                                    <td>{{g}}</td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                      </div>
+                    {%endif%}
+                </td>
+                <td scope="row" class="text-center">
+                    {% if elem.mouse_position|length > 0%}
+                    <details>
+                        <summary>Show ({{elem.mouse_position|length}})</summary>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="text-center">X</th>
+                                    <th scope="col" class="text-center">Y</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for s in elem.mouse_position %}
+                                <tr>
+                                    <td class="text-center">{{s.x}}</td>
+                                    <td class="text-center">{{s.y}}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </details>
+                    {%endif%}
+                </td>
+                <td scope="row" class="text-center">
+                    <img class="img-fluid zoom"  src="data:image/png;base64, {{elem.screenshot}}">
+                </td>
+                <td scope="row" class="text-center">{{elem.creation_date}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    });
+    $(document).ready(function () {
+        var table = $('#table_list').DataTable({
+            "bLengthChange": true,
+            "pageLength": 10,
+            "deferRender": true,
+            "columnDefs": [{
+                "targets": "_all"
+            }],
+            "order": [[27, "desc"]]
+        });
+    });
+</script>
+{% endblock %}
