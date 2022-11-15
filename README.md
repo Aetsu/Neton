@@ -62,6 +62,25 @@ The agent configuration can be done from the **Program.cs** class.
 - *wave* variable: Way of organising the different times the samples are sent. muestras.
 ![](img/2022-10-28-08-16-57.png)
 
+## Sample data
+In the **sample data** folder there is a [sqlite database](Sample%20data/db.sqlite3) with several samples collected from the following services:
+- Virustotal
+- Tria.ge
+- Metadefender
+- Hybrid Analysis
+- Any.run
+- Intezer Analyze
+- Pikker
+- AlienVault OTX
+- Threat.Zone
+
+To access the sample information *copy the sqlite file to the NetonWeb folder* and run the application.
+
+Credentials:
+- **User:** ```raccoon```
+- **Password:** ```jAmb.Abj3.j11pmMa```
+
+
 ## Extra info
 - Slides (ES): https://github.com/Aetsu/Presentaciones/blob/master/Sandbox%20fingerprinting%20-%20Evadiendo%20entornos%20de%20analisis.pdf 
 - Video (ES): https://www.youtube.com/watch?v=AyVgIttiUpQ 
